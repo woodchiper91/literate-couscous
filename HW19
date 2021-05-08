@@ -1,0 +1,107 @@
+// HW19
+#include <iostream>
+
+class ShiftArray{
+public:
+    /// Default constructor define array size = 10;
+    ShiftArray();
+    /// 'initSize' is the size of array.
+    ShiftArray(int initSize);
+    
+    /// circularly shifts the elements in the array by n positions.
+    void circshift(int n);
+    
+    /// Returns the size of array
+    int getSize(void) const;
+    
+    ///[] operator overload: Note that it returns a reference
+    int& operator [](int i);
+private:
+    int size;///< size of array
+    int *arrayPointer;///< first address of memory block
+};
+
+/// Default constructor define array size = 10;
+ShiftArray::ShiftArray():ShiftArray(10){
+}
+/// 'initSize' is the size of array.
+ShiftArray::ShiftArray(int initSize):size(initSize){
+    /// allocate a memory block for integer array
+    arrayPointer = new int[size];
+}
+
+/// circularly shifts the elements in the array by n positions.
+void ShiftArray::circshift(int n){
+    /// make 0<=n<size
+    n %= size;
+    if (n < 0) n += size;
+    if (n == 0) return; // no need to shift
+    
+    /// backup array
+    int *tmp = new int[size];
+    for (int i = 0 ; i < size ; i++){
+        tmp[i] = arrayPointer[i];
+    }
+    
+    /// Shift by n
+    for (int i = 0 ; i < size ; i++){
+        int j = (i - n) % size;
+        if (j < 0) j += size;
+        arrayPointer[i] = tmp[j];
+    }
+    
+    /// delete temporary array
+    delete [] tmp;
+}
+
+/// Returns the size of array
+int ShiftArray::getSize(void) const
+{
+    return size;
+}
+
+///[] operator overload: getter/seter for array
+int& ShiftArray::operator [](int i){
+    return arrayPointer[i];
+}
+
+/// Display array elements on screen
+void displayArray(ShiftArray array);
+void displayArray(ShiftArray array){
+    int size = array.getSize();
+    for (int i = 0 ; i < size ; i++){
+        std::cout << array[i] << " ";
+    }
+}
+
+// main test code
+int main(int argc, char **argv)
+{
+    /// create an int array of size=5
+    const int size1 = 5;
+    ShiftArray a(size1);
+    for (int i = 1 ; i <= size1 ; i++){
+        a[i-1] = i;
+    }
+    
+    /// test shift
+    displayArray(a);
+    std::cout << std::endl;
+    for (int j = 1 ; j < 5 ; j++){
+        a.circshift(-j);
+        displayArray(a);
+        std::cout << std::endl;
+    }
+
+    /// need copy constructor
+    ShiftArray b = a;
+    b[0] = 0;
+    std::cout << "a= ";
+    displayArray(a);
+    std::cout << std::endl;
+    std::cout << "b= ";
+    displayArray(b);
+    std::cout << std::endl;
+    
+    return 0;
+}
